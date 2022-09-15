@@ -22,6 +22,12 @@ FROM ubuntu:20.04
 LABEL maintainer="WSO2 Docker Maintainers <dev@wso2.org>" \
       com.wso2.docker.source="https://github.com/wso2/docker-is/releases/tag/v6.0.0.1"
 
+# Arguments for OS and architecture for current build
+ARG TARGETOS
+ARG TARGETARCH
+
+RUN echo "Building the image for $TARGETOS/$TARGETARCH"
+
 #Install JDK Dependencies
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
@@ -35,8 +41,7 @@ ENV JAVA_VERSION jdk-11.0.13+8
 
 #Install JDK11
 RUN set -eux; \
-    ARCH="$(dpkg --print-architecture)"; \
-    case "${ARCH}" in \
+    case "${TARGETARCH}" in \
         amd64|x86_64) \
             ESUM='3b1c0c34be4c894e64135a454f2d5aaa4bd10aea04ec2fa0c0efe6bb26528e30'; \
             BINARY_URL='https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.13%2B8/OpenJDK11U-jdk_x64_linux_hotspot_11.0.13_8.tar.gz'; \
@@ -46,7 +51,7 @@ RUN set -eux; \
             BINARY_URL='https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.14%2B9/OpenJDK11U-jdk_aarch64_linux_hotspot_11.0.14_9.tar.gz'; \
             ;; \
        *) \
-            echo "Unsupported arch: ${ARCH}"; \
+            echo "Unsupported arch: ${TARGETARCH}"; \
             exit 1; \
             ;; \
     esac; \
